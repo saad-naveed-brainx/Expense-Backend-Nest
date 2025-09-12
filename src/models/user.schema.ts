@@ -5,13 +5,10 @@ import { HydratedDocument } from 'mongoose';
     {
         timestamps: true,
         collection: 'users',
-        versionKey: '1',
+        versionKey: '__v',
     }
 )
 export class User {
-    @Prop()
-    id: string;
-
     @Prop({ required: true })
     name: string;
 

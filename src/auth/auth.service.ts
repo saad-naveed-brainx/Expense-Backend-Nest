@@ -3,24 +3,59 @@ import { CreateUserDto } from '../users/dto/createUser.dto';
 import { UsersService } from 'src/users/users.service';
 import { SignInDto } from 'src/users/dto/signIn.dto';
 import { JwtService } from '@nestjs/jwt';
+import * as bcryptjs from 'bcrypt';
+import { Response } from 'express';
+import { User } from 'src/models/user.schema';
 
 @Injectable()
 export class AuthService {
-    constructor(private usersServvice: UsersService, private jwtService: JwtService) { }
-    async createUserService(dto: CreateUserDto) {
-        console.log("This is the dto recieved in service function of auth service:", dto);
-        const user = await this.usersServvice.createUser(dto);
+    constructor(private usersService: UsersService, private jwtService: JwtService) { }
+    async createUserService(dto: CreateUserDto): Promise<{ message: string }> {
+        return await this.usersService.createUser(dto);
     }
 
-    async signInService(dto: SignInDto): Promise<{ access_Token: string }> {
-        console.log("This is the dto recieved in service function of sign in:", dto);
-        const user = await this.usersServvice.findByEmail(dto.email);
-        if (user?.password !== dto.password) {
-            throw new UnauthorizedException('Invalid credentials');
+
+    async signInService(dto: SignInDto, res: Response) {
+
+        const user = await this.usersService.findByEmail(dto.email);
+
+        if (!user) {
+            throw new UnauthorizedException('User not found.');
         }
-        const payload = { sub: user._id, email: user.email };
+        const isPasswordValid = await bcryptjs.compare(dto.password, user.password);
+
+        if (!isPasswordValid) {
+            throw new UnauthorizedException('Incorrect password');
+        }
+        const payload = { sub: (user as any)._id, email: user.email };
+        const token = await this.jwtService.signAsync(payload);
+        res.cookie('access_token', token, {
+            httpOnly: true,
+            secure: true,
+            maxAge: 2 * 24 * 60 * 60 * 1000,
+        });
+
         return {
-            access_Token: await this.jwtService.signAsync(payload)
+            message: 'User logged in successfully',
+            user: {
+                name: user.name,
+                email: user.email
+            },
+            token: token
+        }
+    }
+
+
+
+    async getProfileService(email: string | null): Promise<User | null> {
+        try {
+            if (!email) {
+                throw new UnauthorizedException('Email is required');
+            }
+            const user = await this.usersService.findByEmail(email);
+            return user;
+        } catch (err) {
+            throw err;
         }
     }
 }

@@ -1,8 +1,10 @@
-import { Controller, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, HttpCode, HttpStatus, Res, UseGuards, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { Post, Body } from '@nestjs/common';
+import { Post, Body, Get } from '@nestjs/common';
 import { CreateUserDto } from '../users/dto/createUser.dto';
 import { SignInDto } from 'src/users/dto/signIn.dto';
+import type { Response, Request } from 'express';
+import { AuthGuard } from './auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -11,12 +13,32 @@ export class AuthController {
     @Post('/create-user')
     @HttpCode(HttpStatus.CREATED)
     createUser(@Body() dto: CreateUserDto) {
-        console.log("This is the dto recieved in controller function of create new user:", dto);
         return this.authService.createUserService(dto);
     }
 
-    @Post('sign-in')
-    SignInDto(@Body() SignInDto: SignInDto) {
-        return this.authService.signInService(SignInDto);
+    @HttpCode(HttpStatus.OK)
+    @Post('/sign-in')
+    async SignInDto(@Body() SignInDto: SignInDto, @Res() res: Response) {
+        console.log("this is the SignInDto in signIn:");
+        const result = await this.authService.signInService(SignInDto, res);
+        return res.json(result);
+    }
+
+
+    @HttpCode(HttpStatus.OK)
+    @Get('/get-profile')
+    @UseGuards(AuthGuard)
+    async getProfile(@Req() req: Request) {
+        const user = req.user as CreateUserDto;
+        return this.authService.getProfileService(user?.email);
+    }
+
+
+    @HttpCode(HttpStatus.OK)
+    @Post('/sign-out')
+    async signOut(@Res() res: Response) {
+        console.log("this is the res in signOut:");
+        res.clearCookie('access_token');
+        return res.json({ message: 'User logged out successfully' });
     }
 }
