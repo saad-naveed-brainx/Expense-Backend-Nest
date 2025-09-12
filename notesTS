@@ -1,0 +1,75 @@
+primitives and referenes data types
+any values with any brackers are reference types
+reference values cant be copied directly. we have to use spread operator for actually copying reference values
+
+
+tuples (fixed size array with fixed value types) let arr : [number,string] = [12,"saad"] this is okay let arr : [string,number] = [12,'saad'] this will give error, we cant change the order of the values in the tuple and also cant put more values than the tuple size
+
+
+enums set of predefined values you make which you will use in future. also we use = sign between key value pairs
+like you can create an enum of status code and their messages and everytime you have to return some message you dont write it again and again you can just return the enum value
+the difference between enum and object is that enum is a predefined set of values and object is a dynamic set of values. enum is more like a constant and object is more like a variable
+
+any (you can store any type of value, typescript got off in this case)
+
+unknown (you can store any value in it but when you are going to use it you have to put a check of that type)
+
+never (infinite loops value cannot be returned from this type)
+like game loops which never ends we put the return type of any function as never and the compiler will know that the controll will never come out of the function
+
+Type Inference
+TypeScript automatically determines the type of a variable based on the value you assign.
+You don’t explicitly write the type.
+Example:
+let count = 10; 
+// TypeScript infers 'count' as number
+
+
+Type Annotation
+You explicitly tell TypeScript the type of a variable, function, or parameter.
+Example:
+let count: number;
+count = 10; // OK
+count = "hello"; // ❌ Error
+
+
+Interfaces are used to define the structure of the object and we can use it to create a new object(to create the structure of the object)
+interface keyword is used to create object, if we want to make any field optional we put ? at the end of the field name
+we can extends interfaces with other interfaces , its same as the inheritance in class
+
+type keyword is used to create a custom type. 
+like type chaha = string, or it can be any type amoung some types which we mention like type chaha = string | number | boolean,
+ 
+
+how to accept a callback function in a function 
+
+function abc(name: string, xyz: (arg:string)=> void);
+
+optional parameter 
+
+function abc(name: string, xyz?: (arg:string)=> void);
+
+default parameters are used to set a default value to the parameter if the user dont pass the value
+you cannot put default value to optional parameter
+
+function abc(name: string, xyz: (arg:string)=> void = ()=> {});
+
+rest/spread operators are same, they work in a same way
+we use rest operator if we know that there will be alot of values to be passed to the function and we dont know the number of values to be passed to the function 
+then we just put all of them in an array with the use of spread operator. this is useful when we are passing a variable number of arguments to a function.
+
+function abc(...args: string []);
+
+abc('asdfa','saad','ali','ahmed');
+
+these all values will go into array  automatically
+
+
+type assertion is used to tell the typescript that the value is of a certain type or its more like type casting. if we have made a variable as unknown type and we want to use it as a certain type we can use type assertion to tell the typescript that the value is of a certain type
+
+non null assertion is used to tell the typescript that the value is not null or undefined
+
+let a = 12;
+a!;
+
+this will tell the typescript that the value is not null or undefined
