@@ -1,10 +1,13 @@
-import { Controller, Get, Param, Post, Body, Query } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, Query, Req } from '@nestjs/common';
 import { CreateExpenseDto } from './dto/create-expense.dto';
 import { ExpenseService } from './expense.service';
-import { Expense } from './interfaces/cat.interface';
-import { Expense as ExpenseSchema } from './expense.schema';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { Request } from '@nestjs/common';
+import { CreateUserDto } from 'src/users/dto/createUser.dto';
 
 @Controller('expense')
+@UseGuards(AuthGuard)
 export class ExpenseController {
     constructor(private expenseService: ExpenseService) { }
 
@@ -15,9 +18,8 @@ export class ExpenseController {
     }
 
     @Post('/create')
-    create(@Body() dto: CreateExpenseDto): void {
-        console.log("This is the dto recieved in controller function:", dto);
-        this.expenseService.create(dto as ExpenseSchema);
+    create(@Body() dto: CreateExpenseDto, @Req() req: Request): void {
+        this.expenseService.create(dto, req['user'] as CreateUserDto);
     }
 
     @Get('filtered')

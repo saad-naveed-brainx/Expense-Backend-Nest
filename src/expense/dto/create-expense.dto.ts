@@ -1,5 +1,4 @@
 export class CreateExpenseDto {
-    id: string;
     amount: number;
     date: Date;
     category: string;

@@ -24,7 +24,6 @@ export class AuthController {
         return res.json(result);
     }
 
-
     @HttpCode(HttpStatus.OK)
     @Get('/get-profile')
     @UseGuards(AuthGuard)
@@ -32,7 +31,6 @@ export class AuthController {
         const user = req.user as CreateUserDto;
         return this.authService.getProfileService(user?.email);
     }
-
 
     @HttpCode(HttpStatus.OK)
     @Post('/sign-out')
