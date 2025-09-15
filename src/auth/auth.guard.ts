@@ -17,7 +17,7 @@ export class AuthGuard implements CanActivate {
         const request = context.switchToHttp().getRequest();
         const token = request.cookies['access_token'];
         if (!token) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException('Please login. You are unauthorised');
         }
         try {
             const payload = await this.jwtService.verifyAsync(
@@ -28,7 +28,7 @@ export class AuthGuard implements CanActivate {
             );
             request['user'] = payload;
         } catch {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException('Please login. You are unauthorised');
         }
         return true;
     }

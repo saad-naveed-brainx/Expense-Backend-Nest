@@ -6,5 +6,4 @@ export class CreateExpenseDto {
     title: string;
     reimbursable: boolean;
     type: string;
-    createdAt: Date
 }

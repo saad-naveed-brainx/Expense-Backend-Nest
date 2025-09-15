@@ -28,9 +28,6 @@ export class Expense {
     @Prop({ required: true })
     type: string;
 
-    @Prop({ required: true })
-    createdAt: Date;
-
     @Prop({ required: true, type: Types.ObjectId, ref: User.name })
     userId: Types.ObjectId;
 }
