@@ -19,7 +19,6 @@ export class ExpenseController {
 
     @Get('/dashboard')
     getDashboardData(@Req() req: Request): any {
-        console.log('req is', req['user'])
         return this.expenseService.getDashboardData(req['user'] as CreateUserDto);
     }
 
