@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/models/user.schema';
 import { CreateUserDto } from './dto/createUser.dto';
-
+import * as bcryptjs from 'bcrypt';
 @Injectable()
 export class UsersService {
     constructor(@InjectModel(User.name) private userModel: Model<User>) { };
@@ -15,22 +15,22 @@ export class UsersService {
             if (response) {
                 throw new BadRequestException('User already exists');
             }
-            const newUser = await this.userModel.create([user], { session });
+            const salt = await bcryptjs.genSalt(10);
+            const hashedPassword = await bcryptjs.hash(user.password, salt);
+            user.password = hashedPassword;
+            await this.userModel.create([user], { session });
             await session.commitTransaction();
-            console.log('this is the new user we created in the users service class:', newUser);
-            return newUser;
+            return { message: 'User Created Successfully' };
         } catch (err) {
             await session.abortTransaction();
-            console.log('this is the error we got in the users service class:', err);
             throw err;
         }
         finally {
             session.endSession();
         }
     }
-    async findByEmail(email: string) {
+    async findByEmail(email: string): Promise<User | null> {
         const user = await this.userModel.findOne({ email }).select('+password');
-        console.log('this is the user we got in from the database in the users service class:', user);
         return user;
     }
 }
