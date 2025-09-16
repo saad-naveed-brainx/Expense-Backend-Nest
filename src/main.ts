@@ -28,13 +28,12 @@
 // }
 // bootstrap();
 
-
 // src/main.ts
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import serverlessExpress from '@vendia/serverless-express';
 
-let server;
+let server: any;
 
 async function bootstrap() {
   if (!server) {
@@ -46,8 +45,10 @@ async function bootstrap() {
   return server;
 }
 
-export const handler = async (event, context) => {
-  const server = await bootstrap();
-  return server(event, context);
-};
+// 👇 Vercel needs "export default"
+export default async function handler(req: any, res: any) {
+  const expressHandler = await bootstrap();
+  return expressHandler(req, res);
+}
+
 
