@@ -3,7 +3,7 @@ import { ExpenseController } from "./expense.controller";
 import { ExpenseService } from "./expense.service";
 import { MongooseModule } from "@nestjs/mongoose";
 import { Expense, ExpenseSchema } from "../models/expense.schema";
-import { UsersModule } from "src/users/users.module";
+import { UsersModule } from "../users/users.module";
 
 @Module({
     imports: [MongooseModule.forFeature([

@@ -2,10 +2,10 @@ import { Controller, Get, Param, Post, Body, Req, Delete, Put } from '@nestjs/co
 import { CreateExpenseDto } from './dto/create-expense.dto';
 import { ExpenseService } from './expense.service';
 import { UseGuards } from '@nestjs/common';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthGuard } from '../auth/auth.guard';
 import { Request } from '@nestjs/common';
-import { CreateUserDto } from 'src/users/dto/createUser.dto';
-import { Expense } from 'src/models/expense.schema';
+import { CreateUserDto } from '../users/dto/createUser.dto';
+import { Expense } from '../models/expense.schema';
 
 @Controller('expense')
 @UseGuards(AuthGuard)

@@ -3,8 +3,8 @@ import { InjectModel, InjectConnection } from "@nestjs/mongoose";
 import { Model, Connection } from "mongoose";
 import { ExpenseDocument, Expense } from "../models/expense.schema";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
-import { CreateUserDto } from "src/users/dto/createUser.dto";
-import { UsersService } from "src/users/users.service";
+import { CreateUserDto } from "../users/dto/createUser.dto";
+import { UsersService } from "../users/users.service";
 @Injectable()
 export class ExpenseService {
     constructor(@InjectModel(Expense.name) private ExpenseModel: Model<ExpenseDocument>, @InjectConnection() private connection: Connection, private readonly usersService: UsersService) { }
@@ -101,7 +101,8 @@ export class ExpenseService {
             }
 
             const allTransactions = await this.ExpenseModel.find({ userId: (userModel as any)._id });
-            const last3DaysExpenses: any = allTransactions.filter(transaction => transaction.date >= new Date(Date.now() - 3 * 24 * 60 * 60 * 1000));
+            const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+            const last3DaysExpenses: any = allTransactions.filter(transaction => transaction.date >= threeDaysAgo);
 
             let totalIncome = 0;
             let totalExpense = 0;

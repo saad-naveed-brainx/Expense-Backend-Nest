@@ -2,7 +2,7 @@ import { Controller, HttpCode, HttpStatus, Res, UseGuards, Req } from '@nestjs/c
 import { AuthService } from './auth.service';
 import { Post, Body, Get } from '@nestjs/common';
 import { CreateUserDto } from '../users/dto/createUser.dto';
-import { SignInDto } from 'src/users/dto/signIn.dto';
+import { SignInDto } from '../users/dto/signIn.dto';
 import type { Response, Request } from 'express';
 import { AuthGuard } from './auth.guard';
 

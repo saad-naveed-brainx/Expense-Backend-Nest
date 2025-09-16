@@ -6,12 +6,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "esModuleInterop": true,
-    "skipLibCheck": true,
-
-    "baseUrl": "./",               
-    "paths": {
-      "src/*": ["src/*"]           
-    }
+    "skipLibCheck": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
