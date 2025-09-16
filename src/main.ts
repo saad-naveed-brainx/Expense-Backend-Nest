@@ -28,27 +28,23 @@
 // }
 // bootstrap();
 
-// src/main.ts
+
+import express from 'express';   // ✅ default import
+import { ExpressAdapter } from '@nestjs/platform-express';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import serverlessExpress from '@vendia/serverless-express';
 
-let server: any;
+const server = express();
 
 async function bootstrap() {
-  if (!server) {
-    const app = await NestFactory.create(AppModule);
-    await app.init();
-    const expressApp = app.getHttpAdapter().getInstance();
-    server = serverlessExpress({ app: expressApp });
-  }
-  return server;
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
+  await app.init(); // don't call listen()
 }
 
-// 👇 Vercel needs "export default"
-export default async function handler(req: any, res: any) {
-  const expressHandler = await bootstrap();
-  return expressHandler(req, res);
-}
+bootstrap();
+
+export default server;
+
+
 
 
