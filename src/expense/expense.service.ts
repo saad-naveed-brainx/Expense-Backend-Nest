@@ -74,10 +74,14 @@ export class ExpenseService {
                 return matches;
             });
 
-            const hasMore = totalExpenses.length > (query.page * query.limit);
+            const ExpenseToSend = filteredExpenses.slice((query.page - 1) * query.limit, query.page * query.limit);
+            console.log("ExpenseToSend in service class:", ExpenseToSend);
+            console.log("filteredExpenses in service class:", filteredExpenses);
+            const hasMore = filteredExpenses.length > (query.page * query.limit);
+            console.log("hasMore in service class:", hasMore);
 
             return {
-                expenses: filteredExpenses.slice((query.page - 1) * query.limit, query.page * query.limit),
+                expenses: ExpenseToSend,
                 hasMore
             };
         } catch (error) {
