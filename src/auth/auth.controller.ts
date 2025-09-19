@@ -19,9 +19,16 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @Post('/sign-in')
     async SignInDto(@Body() SignInDto: SignInDto, @Res() res: Response) {
-        console.log("this is the SignInDto in signIn:");
         const result = await this.authService.signInService(SignInDto, res);
         return res.json(result);
+    }
+
+    @HttpCode(HttpStatus.OK)
+    @Get('me')
+    @UseGuards(AuthGuard)
+    async isLoggedIn(@Req() req: Request) {
+        const user = req.user as CreateUserDto;
+        return this.authService.isLoggedInService(user);
     }
 
     @HttpCode(HttpStatus.OK)
@@ -35,7 +42,6 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @Post('/sign-out')
     async signOut(@Res() res: Response) {
-        console.log("this is the res in signOut:");
         res.clearCookie('access_token');
         return res.json({ message: 'User logged out successfully' });
     }

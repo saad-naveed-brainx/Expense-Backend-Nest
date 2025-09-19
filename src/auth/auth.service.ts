@@ -14,7 +14,6 @@ export class AuthService {
         return await this.usersService.createUser(dto);
     }
 
-
     async signInService(dto: SignInDto, res: Response) {
 
         const user = await this.usersService.findByEmail(dto.email);
@@ -42,6 +41,23 @@ export class AuthService {
                 email: user.email
             },
             token: token
+        }
+    }
+
+    async isLoggedInService(user: CreateUserDto) {
+        try {
+            if (user) {
+                return {
+                    isLoggedIn: true,
+                }
+            }
+            else {
+                return {
+                    isLoggedIn: false,
+                }
+            }
+        } catch (err) {
+            throw err;
         }
     }
 

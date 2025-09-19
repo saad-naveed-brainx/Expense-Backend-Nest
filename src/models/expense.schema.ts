@@ -33,3 +33,4 @@ export class Expense {
 }
 
 export const ExpenseSchema = SchemaFactory.createForClass(Expense);
+ExpenseSchema.set('timestamps', true);

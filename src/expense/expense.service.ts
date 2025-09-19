@@ -5,6 +5,7 @@ import { ExpenseDocument, Expense } from "../models/expense.schema";
 import { CreateExpenseDto } from "./dto/create-expense.dto";
 import { CreateUserDto } from "../users/dto/createUser.dto";
 import { UsersService } from "../users/users.service";
+import { QueryDto } from "./dto/query.dto";
 @Injectable()
 export class ExpenseService {
     constructor(@InjectModel(Expense.name) private ExpenseModel: Model<ExpenseDocument>, @InjectConnection() private connection: Connection, private readonly usersService: UsersService) { }
@@ -32,14 +33,53 @@ export class ExpenseService {
         }
     }
 
-    async getAllExpenses(user: CreateUserDto) {
+    async getAllExpenses(user: CreateUserDto, query: QueryDto) {
         try {
             const userModel = await this.usersService.findByEmail(user.email);
             if (!userModel) {
                 throw new BadRequestException('User not found');
             }
-            const expenses = await this.ExpenseModel.find({ userId: (userModel as any)._id }).select('-userId');
-            return expenses;
+
+            if (query.title == null && query.category == null && query.type == null && query.category == null) {
+                console.log("if runs", query)
+                const totalExpenses = await this.ExpenseModel.find({ userId: (userModel as any)._id }).sort({ createdAt: -1 });
+                const hasMore: boolean = totalExpenses.length > (query.page * query.limit);
+                return {
+                    expenses: totalExpenses.slice((query.page - 1) * query.limit, query.page * query.limit),
+                    hasMore
+                };
+            }
+
+            const totalExpenses = await this.ExpenseModel.find({ userId: (userModel as any)._id }).sort({ createdAt: -1 });
+            // console.log("expenses for page", query.page, "is ", expenses, "and limit is", query.limit)
+            const categories = query.category && query.category !== '' ? query.category.split(',') : [];
+            const types = query.type && query.type !== '' ? query.type.split(',') : [];
+            const hasTitle = query.title && query.title !== '';
+
+            const filteredExpenses = totalExpenses.filter((expense: any) => {
+                let matches = true;
+
+                if (hasTitle) {
+                    matches = matches && expense.title?.toLowerCase().includes(query.title.toLowerCase());
+                }
+
+                if (categories.length > 0) {
+                    matches = matches && categories.includes(expense.category);
+                }
+
+                if (types.length > 0) {
+                    matches = matches && types.includes(expense.type);
+                }
+
+                return matches;
+            });
+
+            const hasMore = totalExpenses.length > (query.page * query.limit);
+
+            return {
+                expenses: filteredExpenses.slice((query.page - 1) * query.limit, query.page * query.limit),
+                hasMore
+            };
         } catch (error) {
             console.log("error in getAllExpenses in service class:", error);
             throw error;
@@ -50,7 +90,7 @@ export class ExpenseService {
         const session = await this.connection.startSession();
         session.startTransaction();
         try {
-            const expense = await this.ExpenseModel.findByIdAndDelete(id, { session });
+            await this.ExpenseModel.findByIdAndDelete(id, { session });
             await session.commitTransaction();
             return {
                 success: true,
@@ -102,7 +142,7 @@ export class ExpenseService {
 
             const allTransactions = await this.ExpenseModel.find({ userId: (userModel as any)._id });
             const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
-            const last3DaysExpenses: any = allTransactions.filter(transaction => transaction.date >= threeDaysAgo);
+            const last3DaysExpenses: any = allTransactions.filter((transaction: Expense) => transaction.date >= threeDaysAgo);
 
             let totalIncome = 0;
             let totalExpense = 0;

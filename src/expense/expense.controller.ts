@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Body, Req, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, Req, Delete, Put, Query } from '@nestjs/common';
 import { CreateExpenseDto } from './dto/create-expense.dto';
 import { ExpenseService } from './expense.service';
 import { UseGuards } from '@nestjs/common';
@@ -6,6 +6,7 @@ import { AuthGuard } from '../auth/auth.guard';
 import { Request } from '@nestjs/common';
 import { CreateUserDto } from '../users/dto/createUser.dto';
 import { Expense } from '../models/expense.schema';
+import { QueryDto } from './dto/query.dto';
 
 @Controller('expense')
 @UseGuards(AuthGuard)
@@ -24,9 +25,10 @@ export class ExpenseController {
     }
 
     @Get('/all')
-    getAllExpenses(@Req() req: Request): Promise<Expense[] | []> {
-        return this.expenseService.getAllExpenses(req['user'] as CreateUserDto);
-
+    getAllExpenses(@Req() req: Request, @Query() query: QueryDto): Promise<{ expenses: Expense[], hasMore: boolean }> {
+        console.log('query is', query)
+        return this.expenseService.getAllExpenses(req['user'] as CreateUserDto, query);
+        
     }
 
     @Get('/:id')
