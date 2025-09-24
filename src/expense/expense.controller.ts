@@ -28,7 +28,6 @@ export class ExpenseController {
     getAllExpenses(@Req() req: Request, @Query() query: QueryDto): Promise<{ expenses: Expense[], hasMore: boolean }> {
         console.log('query is', query)
         return this.expenseService.getAllExpenses(req['user'] as CreateUserDto, query);
-        
     }
 
     @Get('/:id')
